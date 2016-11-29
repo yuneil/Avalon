@@ -1,0 +1,2 @@
+C:\Dev\Avalon\obj\Debug\Avalon.njsprojResolveAssemblyReference.cache
+C:\Dev\Avalon\bin\Microsoft.NodejsTools.WebRole.dll
