@@ -1,7 +1,12 @@
 ﻿var mysqlHelper = require('../model/mysqlHelper');
+var mongoHelper = require('../model/mongoHelper');
 
 exports.login = (req, res) => {
-    mysqlHelper.query('select name from user where id = ?', [1], function(rows, err) {
+    // mysqlHelper.query('select name from user where id = ?', [1], function(rows, err) {
+    //     res.send(rows);
+    // })
+
+    mongoHelper.query({}, 'test', function(rows, err) {
         res.send(rows);
     })
 }
