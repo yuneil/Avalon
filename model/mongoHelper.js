@@ -20,22 +20,15 @@ exports.remove = remove;
 exports.toJson = toJson;
 
 function query(sql, collection, callback) {
-    // try {
-    //     db.collection(collection).find(sql, function(err, docs) {
-    //         callback(docs, err);
-    //     });
-    // } catch (error) {
-    //     callback([], error);
-    //     console.log(error);
-    // }
-
-    db.collection(collection).find({}).toArray(function(err, docs) {
-        assert.equal(err, null);
-        assert.equal(2, docs.length);
-        console.log("Found the following records");
-        console.dir(docs);
-        callback(docs);
-    });
+    try {
+        db.collection(collection).find(sql).toArray(function(err, docs) {
+            console.dir(docs);
+            callback(docs);
+        });
+    } catch (error) {
+        callback([], error);
+        console.log(error);
+    }
 }
 
 function queryOne(sql, params, callback) {

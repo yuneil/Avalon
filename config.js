@@ -9,7 +9,7 @@ exports.mongo = {
     'host': 'localhost:27017',
     'user': 'root',
     'password': '123456',
-    'database': 'avalon',
+    'database': 'Avalon',
 }
 exports.loginWithExtension = (req, res) => {}
 
