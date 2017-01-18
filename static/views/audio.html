@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Home</title>
+</head>
+
+<body>
+
+</body>
+
+<script>
+    var ctxAudio = new window.AudioContext(),
+        analyser = ctxAudio.createAnalyser(),
+        buf = new Float32Array(1024),
+        input, error, frequency, pitch;
+
+    analyser.fftSize = 2048;
+    MIN_SAMPLES = 0; // will be initialized when AudioContext is created.
+
+    navigator.getUserMedia({
+        audio: true
+    }, eventGetUserMedia, function() {
+        console.log('can not get user media.')
+    });
+
+    function eventGetUserMedia(stream) {
+        input = ctxAudio.createMediaStreamSource(stream);
+        var low = ctxAudio.createBiquadFilter();
+        low.frequency.value = 1000.0;
+        low.type = low.LOWPASS;
+
+        input.connect(low);
+        low.connect(analyser);
+
+        updatePitch();
+    }
+
+    function updatePitch() {
+        analyser.getFloatTimeDomainData(buf);
+
+        frequency = pitch = autoCorrelate(buf, ctxAudio.sampleRate);
+
+        console.log(pitch);
+
+        setTimeout(function() {
+            updatePitch();
+        }, 500);
+
+    }
+
+    function autoCorrelate(buf, sampleRate) {
+        var SIZE = buf.length;
+        var MAX_SAMPLES = Math.floor(SIZE / 2);
+        var best_offset = -1;
+        var best_correlation = 0;
+        var rms = 0;
+        var foundGoodCorrelation = false;
+        var correlations = new Array(MAX_SAMPLES);
+
+        for (var i = 0; i < SIZE; i++) {
+            var val = buf[i];
+            rms += val * val;
+        }
+
+        rms = Math.sqrt(rms / SIZE);
+        if (rms < 0.01) // not enough signal
+            return -1;
+
+        var lastCorrelation = 1;
+        for (var offset = MIN_SAMPLES; offset < MAX_SAMPLES; offset++) {
+            var correlation = 0;
+
+            for (var i = 0; i < MAX_SAMPLES; i++) {
+                correlation += Math.abs((buf[i]) - (buf[i + offset]));
+            }
+            correlation = 1 - (correlation / MAX_SAMPLES);
+            correlations[offset] = correlation; // store it, for the tweaking we need to do below.
+            if ((correlation > 0.9) && (correlation > lastCorrelation)) {
+                foundGoodCorrelation = true;
+                if (correlation > best_correlation) {
+                    best_correlation = correlation;
+                    best_offset = offset;
+                }
+            } else if (foundGoodCorrelation) {
+                var shift = (correlations[best_offset + 1] - correlations[best_offset - 1]) / correlations[best_offset];
+                return sampleRate / (best_offset + (8 * shift));
+            }
+            lastCorrelation = correlation;
+        }
+        if (best_correlation > 0.01) {
+            // console.log("f = " + sampleRate/best_offset + "Hz (rms: " + rms + " confidence: " + best_correlation + ")")
+            return sampleRate / best_offset;
+        }
+        return -1;
+        //	var best_frequency = sampleRate/best_offset;
+    }
+
+    var dictMap = {
+        34.6: 'C#',
+        38.9: 'D#',
+        46.2: 'F#',
+        51.9: 'G#',
+        58.3: 'A#',
+
+        69.3: 'C#',
+        77.8: 'D#',
+        92.5: 'F#',
+        103.8: 'G#',
+
+        110: 'A',
+        116.5: 'A#',
+        123.45: 'B',
+        130.8: 'C',
+        138.6: 'C#',
+        146.825: 'D',
+        155.6: 'D#',
+        164.8: 'E',
+        174.6: 'F',
+        185: 'F#',
+        195.975: 'G',
+        207.6: 'G#',
+
+        220: 'A',
+        233: 'A#',
+        246.9: 'B',
+        261.6: 'C',
+        277: 'C#',
+        293.65: 'D',
+        311: 'D#',
+        329.6: 'E',
+        349.2: 'F',
+        370: 'F#',
+        391.95: 'G',
+        415: 'G#',
+
+        440: 'A',
+        466: 'A#',
+        493.8: 'B',
+        523.2: 'C',
+        554: 'C#',
+        587.3: 'D',
+        622: 'D#',
+        659.2: 'E',
+        698.4: 'F',
+        740: 'F#',
+        783.9: 'G',
+        831: 'G#',
+
+        880: 'A',
+        932: 'A#',
+        987.6: 'B',
+        1046.4: 'C',
+        1109: 'C#',
+        1174.6: 'D',
+        1244: 'D#',
+        1318.4: 'E',
+        1396.8: 'F',
+        1480: 'F#',
+        1567.8: 'G',
+        1661: 'G#',
+
+        1760: 'A',
+        1865: 'A#',
+        1975.2: 'B',
+        2092.8: 'C',
+        2217 : 'C#',
+        2349.2: 'D',
+        2489 : 'D#',
+        2636.8: 'E',
+        2793.6: 'F',
+        2960 : 'F#',
+        3135.6: 'G',
+        3322 : 'G#',
+
+        3520 : 'A',
+        3729: 'A#',
+        3950.4 : 'B',
+        4185.6 : 'C',
+        4698.4: 'D',
+        5273.6: 'E',
+        5587.2: 'F',
+        6271.2: 'G',
+    }
+</script>
+
+</html>

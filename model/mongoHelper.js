@@ -12,16 +12,16 @@ client.connect("mongodb://" + config.mongo.host + "/" + config.mongo.database, {
     });
 
 exports.db = db;
-exports.query = query;
-exports.queryOne = queryOne;
+exports.find = find;
+exports.findOne = findOne;
 exports.update = update;
 exports.insert = insert;
 exports.remove = remove;
 exports.toJson = toJson;
 
-function query(sql, collection, callback) {
+function find(collection, selector, callback) {
     try {
-        db.collection(collection).find(sql).toArray(function(err, docs) {
+        db.collection(collection).find(selector).toArray(function(err, docs) {
             console.dir(docs);
             callback(docs);
         });
@@ -31,9 +31,9 @@ function query(sql, collection, callback) {
     }
 }
 
-function queryOne(sql, params, callback) {
+function findOne(collection, selector, callback) {
     try {
-        db.collection(collection).findOne(sql, function(err, doc) {
+        db.collection(collection).findOne(selector, function(err, doc) {
             callback(doc, err);
         });
     } catch (error) {
@@ -42,9 +42,9 @@ function queryOne(sql, params, callback) {
     }
 }
 
-function queryWithoutResult(sql, params, callback) {
+function update(collection, selector, document, callback, isUpsert = false, isMulti = false) {
     try {
-        db.collection(collection).update(sql, function(err, doc) {
+        db.collection(collection).update(selector, document, { upsert: isUpsert, multi: isMulti }, function(err, doc) {
             callback(doc, err);
         });
     } catch (error) {
@@ -53,9 +53,16 @@ function queryWithoutResult(sql, params, callback) {
     }
 }
 
-function update(sql, callback) { queryWithoutResult(sql, params, callback); }
-
-function insert(sql, callback) { queryWithoutResult(sql, params, callback); }
+function update(collection, selector, document, callback) {
+    try {
+        db.collection(collection).update(selector, document, { upsert: isUpsert, multi: isMulti }, function(err, doc) {
+            callback(doc, err);
+        });
+    } catch (error) {
+        callback([], error);
+        console.log(error);
+    }
+}
 
 function remove(sql, callback) { queryWithoutResult(sql, params, callback); }
 
