@@ -42,6 +42,13 @@ class Pathway {
         this.initPath();
     }
 
+    destory() {
+        this.canvas = null;
+        this.ctx = null;
+        this.canvasCache = null;
+        this.ctxCache = null;
+    }
+
     initPath() {
         let ctx = this.ctx, //todo: offline
             width = this.option.widthCanvas,
@@ -87,10 +94,13 @@ class Pathway {
         ctx.restore();
     }
 
-    destory() {
-        this.canvas = null;
-        this.ctx = null;
-        this.canvasCache = null;
-        this.ctxCache = null;
-    }
+    start() {}
+
+    pause() {}
+
+    resume() {}
+
+    stop() {}
+
+    loadScore() {}
 }

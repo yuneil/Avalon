@@ -12,7 +12,7 @@ class InstrumentPiano extends InstrumentBase {
 
         xml = new XMLHttpRequest();
         xml.responseType = 'arraybuffer';
-        xml.open('GET', '/sound/referenceNote/piano.wav', true);
+        xml.open('GET', '/sound/referenceNote/pianoBase.wav', true);
         xml.onload = function() {
             ctx.decodeAudioData(
                 xml.response,
