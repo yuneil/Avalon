@@ -6,8 +6,8 @@
     "configurations": [{
             "type": "node",
             "request": "launch",
-            "name": "调试NodeJS",
-            "program": "${workspaceRoot}\\app.js",
+            "name": "NodeJS",
+            "program": "${workspaceRoot}/app.js",
             "cwd": "${workspaceRoot}"
         },
         {
