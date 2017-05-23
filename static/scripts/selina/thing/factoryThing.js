@@ -23,5 +23,6 @@ class FactoryThing {
 
     init() {
         this.add(0, ThingGround);
+        this.add(1, ThingSky);
     }
 };

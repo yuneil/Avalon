@@ -15,16 +15,32 @@
             background-color: #eee;
             overflow: hidden;
         }
+        
+        .divPitch {
+            font-size: 22px;
+            color: #e11111;
+            width: 100px;
+            height: 40px;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
     </style>
 </head>
 
 <body>
+
     <div id='divStage'></div>
+    <div id='divPitch' class="divPitch"></div>
+
+    <img src="/scripts/selina/img/sprite.jpg" id="imgSprite" style="display: none;" />
 </body>
 
 <script src='/scripts/lib/jquery-3.2.1.js'></script>
 <script src='/scripts/selina/config.js'></script>
+<script src='/scripts/common/resolver.js'></script>
 <script src='/scripts/selina/thing/thingGround.js'></script>
+<script src='/scripts/selina/thing/thingSky.js'></script>
 <script src='/scripts/selina/thing/factoryThing.js'></script>
 <script src='/scripts/selina/stage.js'></script>
 <script src='/scripts/selina/selina.js'></script>

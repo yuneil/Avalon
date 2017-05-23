@@ -7,13 +7,16 @@ class Resolver {
     init(callback) {
         var _this = this;
         this.callback = callback;
-        var ctxAudio = new window.AudioContext(),
-            analyser = ctxAudio.createAnalyser(),
-            buf = new Float32Array(1024),
-            input, error, frequency, pitch;
+        this.ctxAudio = new window.AudioContext();
+        this.analyser = this.ctxAudio.createAnalyser();
+        this.buf = new Float32Array(1024);
+        this.input;
+        this.error;
+        this.frequency;
+        this.pitch;
 
-        analyser.fftSize = 2048;
-        MIN_SAMPLES = 0; // will be initialized when AudioContext is created.
+        this.analyser.fftSize = 2048;
+        this.MIN_SAMPLES = 0; // will be initialized when AudioContext is created.
 
         navigator.getUserMedia({
             audio: true
@@ -22,14 +25,15 @@ class Resolver {
         });
 
         function eventGetUserMedia(stream) {
-            input = ctxAudio.createMediaStreamSource(stream);
-            var low = ctxAudio.createBiquadFilter();
+            _this.input = _this.ctxAudio.createMediaStreamSource(stream);
+            var low = _this.ctxAudio.createBiquadFilter();
             low.frequency.value = 1000.0;
             low.type = 'lowpass';
 
-            input.connect(low);
-            low.connect(analyser);
+            _this.input.connect(low);
+            low.connect(_this.analyser);
         }
+        return this;
     }
 
     start() {
@@ -52,11 +56,11 @@ class Resolver {
             return;
         }
 
-        analyser.getFloatTimeDomainData(buf);
+        this.analyser.getFloatTimeDomainData(this.buf);
 
-        frequency = pitch = this.autoCorrelate(buf, ctxAudio.sampleRate);
+        this.frequency = this.pitch = this.autoCorrelate(this.buf, this.ctxAudio.sampleRate);
 
-        this.callback();
+        this.callback(this.pitch);
 
         // var lastKey;
         // for (var key in AppConfig.dictTone) {
@@ -94,7 +98,7 @@ class Resolver {
             return -1;
 
         var lastCorrelation = 1;
-        for (var offset = MIN_SAMPLES; offset < MAX_SAMPLES; offset++) {
+        for (var offset = this.MIN_SAMPLES; offset < MAX_SAMPLES; offset++) {
             var correlation = 0;
 
             for (var i = 0; i < MAX_SAMPLES; i++) {

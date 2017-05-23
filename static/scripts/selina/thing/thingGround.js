@@ -11,4 +11,8 @@ class ThingGround {
         context.fillRect(this.tStart * CONFIG.pixelSpeed, 500, (this.tEnd - this.tStart) * CONFIG.pixelSpeed, CONFIG.height - 500);
         context.restore();
     }
+
+    test(pitch) {
+        return true;
+    }
 }
