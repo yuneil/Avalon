@@ -11,4 +11,11 @@ class Selina {
     }
 }
 
+// temp 记录音符
+var temp = []
+var content = {
+    lastTime: 0,
+    arr: []
+}
+
 new Selina();

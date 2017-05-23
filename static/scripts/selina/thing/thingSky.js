@@ -5,11 +5,14 @@ class ThingSky {
         this.tStart = element[2];
         this.tEnd = element[3];
         this.pitch = element[4];
+
+        this.heightBase = CONFIG.height * CONFIG.baseline;
+        this.y = 0;
     }
 
     print(context) {
         context.save();
-        context.fillRect(this.tStart * CONFIG.pixelSpeed, 100, (this.tEnd - this.tStart) * CONFIG.pixelSpeed, 200 - this.pitch / CONFIG.perPitch);
+        context.fillRect(this.tStart * CONFIG.pixelSpeed, 0, (this.tEnd - this.tStart) * CONFIG.pixelSpeed, this.heightBase - this.pitch / CONFIG.perPitch);
         context.restore();
     }
 

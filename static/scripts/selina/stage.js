@@ -21,7 +21,8 @@ class Stage {
         this.elapseTime = 0;
 
         this.option = {
-            mapId: "1",
+            mapId: "Careless_Whisper",
+            // mapId: "1",
         }
 
         this.init();
@@ -79,12 +80,13 @@ class Stage {
 
         function play() {
             if (!_this.isRunning) return;
-            var now = new Date();
-            _this.elapseTime = (now - _this.initTime) / 1000;
+            _this.elapseTime = (new Date() - _this.initTime) / 1000;
             _this.ctx.clearRect(0, 0, CONFIG.width, CONFIG.height);
+
+            // 移动到地图对应位置
             _this.ctx.drawImage(_this.canvasMap, _this.elapseTime * 50, 0, CONFIG.width, CONFIG.height, 0, 0, CONFIG.width, CONFIG.height);
 
-            _this.monstor.y -= 1;
+            // 屎球震动
             _this.monstor.paint(_this.ctx);
             requestAnimationFrame(play);
         }
@@ -92,11 +94,14 @@ class Stage {
     }
 
     initSprite() {
-        this.sprite = {};
+        this.sprite = {
+            x: 20,
+            y: CONFIG.height * (1 - CONFIG.baseline),
+            size: 50,
+            elapseLast: undefined,
+        };
         var _this = this;
-        this.sprite.x = 20;
-        this.sprite.y = 300;
-        this.sprite.size = 50;
+
         this.sprite.paint = function(context) {
             if (!_this.imgSprite) return;
             context.save();
@@ -107,7 +112,6 @@ class Stage {
         this.sprite.over = function() {
             console.log('game over~');
         };
-
 
         // 命中测试，确认小屎球是否碰到墙壁边缘
         this.sprite.test = function(pitch) {
@@ -131,21 +135,36 @@ class Stage {
             _this.divPitch.html(pitch);
 
             //屏幕中心
-            _this.sprite.y = CONFIG.height / 2 - (pitch / CONFIG.perPitch);
+            var y = CONFIG.height * CONFIG.baseline - (pitch / CONFIG.perPitch);
 
-            var now = new Date();
-            var elapse = now - _this.initTime;
+
             _this.ctxMap.save();
             _this.ctxMap.fillStyle = '#e11';
-            _this.ctxMap.fillRect(_this.sprite.x + CONFIG.width - 300 + elapse / 1000 * 50, _this.sprite.y, 5, 5);
+            _this.ctxMap.moveTo(_this.sprite.x + CONFIG.width - 300 + _this.elapseLast * 50, _this.sprite.y);
+            _this.ctxMap.lineTo(_this.sprite.x + CONFIG.width - 300 + _this.elapseTime * 50, y);
+            _this.ctxMap.lineWidth = 1;
+            _this.ctxMap.strokeStyle = "#ff0000";
+            _this.ctxMap.stroke();
+            // _this.ctxMap.fillRect(_this.sprite.x + CONFIG.width - 300 + elapse / 1000 * 50, y, 5, 5);
             _this.ctxMap.restore();
 
 
-            // 如果碰到屏幕边缘，则game over
-            if (!_this.sprite.test(pitch)) {
-                console.log("upper: " + (CONFIG.height / 2 + 200) + "; lowwer: " + (_this.sprite.y < CONFIG.height / 2 - 200) + "; now:" + (pitch / 10 + CONFIG.height / 2 - 100));
-                _this.sprite.over();
+            // temp 记录音符
+            content.arr.push(pitch);
+            if (_this.elapseLast - content.lastTime > 2) {;
+                temp.push([1, 0, content.lastTime, _this.elapseLast, parseFloat(Math.max.apply(null, content.arr)).toFixed(2)]);
+                content.arr = [];
+                content.lastTime = _this.elapseTime;
             }
+
+            _this.sprite.y = y;
+            _this.elapseLast = _this.elapseTime;
+
+            // 如果碰到屏幕边缘，则game over
+            // if (!_this.sprite.test(pitch)) {
+            //     console.log("upper: " + (CONFIG.height / 2 + 200) + "; lowwer: " + (_this.sprite.y < CONFIG.height / 2 - 200) + "; now:" + (pitch / 10 + CONFIG.height / 2 - 100));
+            //     _this.sprite.over();
+            // }
         });
     }
 
